@@ -75,6 +75,30 @@ Lets users ask natural-language questions such as:
 
 The chatbot is grounded on the dashboard dataset loaded from SQLite at runtime.
 
+## Calculation Logic
+
+The key calculations happen in `services/metrics_service.py` using data from:
+- `test_execution` table for execution and scope metrics
+- `defects` table for defect totals and severity counts
+
+Calculated KPI values:
+- `total_test_cases`: sum of `planned_test_cases`
+- `executed_test_cases`: sum of `executed_test_cases`
+- `pass_rate_pct`: `(total_passed / total_executed) * 100`
+- `execution_rate_pct`: `(total_executed / total_test_cases) * 100`
+- `error_discovery_rate_pct`: `(total_defects / total_executed) * 100`
+- `scope_coverage_pct`: average of `scope_executed_pct` across cycles
+- `total_defects`: count of rows in the `defects` table
+- `closed_defects`: count of defects where `status == "Closed/Deferred"`
+- `deferred_tests`: sum of `deferred_test_cases`
+- `severity_critical`, `severity_high`, `severity_medium`, `severity_low`: counts of defects grouped by `severity`
+
+Derived datasets prepared for charts and tables:
+- `defects_per_cycle`: defects grouped by `cycle_name` and `severity`
+- `defect_status`: defects grouped by `status` and `severity`
+- `root_cause`: defects grouped by `root_cause`
+- `weekly_discovery`: defects grouped by `discovered_week`
+
 ## Architecture diagram
 
 ```mermaid

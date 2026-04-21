@@ -13,14 +13,16 @@ def page() -> None:
     st.markdown("## AI Analysis & Chatbot")
     st.caption("Use OpenAI to generate release insights and chat with the QA dashboard data.")
 
-    cycles_df = read_table("test_cycles")
+    # Old table used for sample DB
+    # cycles_df = read_table("test_cycles")
+    cycles_df = read_table("test_execution")
     defects_df = read_table("defects")
     dataset = build_dashboard_dataset(cycles_df, defects_df)
 
-    entered_key = api_key_helper(default_configured=is_openai_configured())
-    effective_key = entered_key or OPENAI_API_KEY
+    # entered_key = api_key_helper(default_configured=is_openai_configured())
+    effective_key = OPENAI_API_KEY
 
-    tab1, tab2 = st.tabs(["AI Analysis", "QA Copilot Chat"])
+    tab1, tab2 = st.tabs(["AI Analysis", "Insight Bot"])
 
     with tab1:
         left, right = st.columns([1.1, 0.9])
@@ -46,7 +48,7 @@ def page() -> None:
                 render_analysis_placeholder()
 
     with tab2:
-        st.markdown("### Ask the QA Copilot")
+        st.markdown("### Ask Insight Bot")
         st.write("Examples: Which cycle is riskiest? Why is pass rate low? What actions should the team take this week?")
         history = st.session_state.setdefault("qa_chat_history", [])
         render_chat_history(history)

@@ -5,7 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 from config import DB_PATH
-from utils.sample_data import TEST_EXECUTION, TESTCASE_DETAILS, DEFECTS, ALERTS
+# from utils.sample_data import TEST_EXECUTION, TESTCASE_DETAILS, DEFECTS, ALERTS
 
 
 def get_connection() -> sqlite3.Connection:
@@ -19,7 +19,7 @@ def initialize_database(schema_path: Path | None = None) -> None:
     conn = get_connection()
     try:
         create_tables(conn)
-        seed_database(conn)
+        # seed_database(conn)
     finally:
         conn.close()
 
@@ -30,10 +30,34 @@ def create_tables(conn: sqlite3.Connection) -> None:
     # ---------------------------------------------------------
     # Test Execution Table
     # ---------------------------------------------------------
+    # Old sample DB schema
+    # cursor.execute(
+    #     """
+    #     CREATE TABLE IF NOT EXISTS test_execution (
+    #         testcycle_id TEXT PRIMARY KEY,
+    #         environment TEXT NOT NULL,
+    #         source_filename TEXT NOT NULL,
+    #         planned_test_cases INTEGER NOT NULL,
+    #         total_executed_test_cases INTEGER NOT NULL,
+    #         total_not_executed INTEGER,
+    #         total_passed_test_cases INTEGER NOT NULL,
+    #         total_failed_test_cases INTEGER NOT NULL,
+    #         critical_test_cases INTEGER,
+    #         non_critical_test_cases INTEGER,
+    #         blocked_test_cases INTEGER,
+    #         deferred_test_cases INTEGER,
+    #         scope_executed_pct REAL,
+    #         scope_pending_pct REAL,
+    #         outof_scope_testcases INTEGER,
+    #         active_flag BOOLEAN,
+    #         created_ts DATETIME
+    #     )
+    #     """
+    # )
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS test_execution (
-            testcycle_id TEXT PRIMARY KEY,
+            testcycle_id INTEGER PRIMARY KEY AUTOINCREMENT,
             environment TEXT NOT NULL,
             source_filename TEXT NOT NULL,
             planned_test_cases INTEGER NOT NULL,
@@ -49,7 +73,7 @@ def create_tables(conn: sqlite3.Connection) -> None:
             scope_pending_pct REAL,
             outof_scope_testcases INTEGER,
             active_flag BOOLEAN,
-            created_ts DATETIME
+            created_ts TEXT
         )
         """
     )
@@ -82,13 +106,28 @@ def create_tables(conn: sqlite3.Connection) -> None:
     # ---------------------------------------------------------
     # Defects Table
     # ---------------------------------------------------------
+    # Old sample DB schema
+    # cursor.execute(
+    #     """
+    #     CREATE TABLE IF NOT EXISTS defects (
+    #         defect_id TEXT PRIMARY KEY,
+    #         cycle_name TEXT,
+    #         scenario_id TEXT,
+    #         testCase_id TEXT,
+    #         severity TEXT,
+    #         status TEXT,
+    #         root_cause TEXT,
+    #         discovered_week TEXT
+    #     )
+    #     """
+    # )
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS defects (
             defect_id TEXT PRIMARY KEY,
             cycle_name TEXT,
             scenario_id TEXT,
-            testCase_id TEXT,
+            testcase_id TEXT,
             severity TEXT,
             status TEXT,
             root_cause TEXT,
@@ -100,10 +139,21 @@ def create_tables(conn: sqlite3.Connection) -> None:
     # ---------------------------------------------------------
     # Alerts Table
     # ---------------------------------------------------------
+    # Old sample DB schema
+    # cursor.execute(
+    #     """
+    #     CREATE TABLE IF NOT EXISTS alerts (
+    #         AlertId TEXT PRIMARY KEY,
+    #         message TEXT,
+    #         priority TEXT,
+    #         is_active TEXT
+    #     )
+    #     """
+    # )
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS alerts (
-            AlertId TEXT PRIMARY KEY,
+            alert_id TEXT PRIMARY KEY,
             message TEXT,
             priority TEXT,
             is_active TEXT
@@ -190,13 +240,30 @@ def seed_database(conn: sqlite3.Connection) -> None:
     ).fetchone()[0]
 
     if defect_count == 0:
+        # Old sample DB field name: testCase_id
+        # cursor.executemany(
+        #     """
+        #     INSERT INTO defects (
+        #         defect_id,
+        #         cycle_name,
+        #         scenario_id,
+        #         testCase_id,
+        #         severity,
+        #         status,
+        #         root_cause,
+        #         discovered_week
+        #     )
+        #     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        #     """,
+        #     DEFECTS,
+        # )
         cursor.executemany(
             """
             INSERT INTO defects (
                 defect_id,
                 cycle_name,
                 scenario_id,
-                testCase_id,
+                testcase_id,
                 severity,
                 status,
                 root_cause,
@@ -215,10 +282,23 @@ def seed_database(conn: sqlite3.Connection) -> None:
     ).fetchone()[0]
 
     if alert_count == 0:
+        # Old sample DB field name: AlertId
+        # cursor.executemany(
+        #     """
+        #     INSERT INTO alerts (
+        #         AlertId,
+        #         message,
+        #         priority,
+        #         is_active
+        #     )
+        #     VALUES (?, ?, ?, ?)
+        #     """,
+        #     ALERTS,
+        # )
         cursor.executemany(
             """
             INSERT INTO alerts (
-                AlertId,
+                alert_id,
                 message,
                 priority,
                 is_active

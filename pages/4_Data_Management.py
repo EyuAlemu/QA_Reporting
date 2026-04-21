@@ -23,15 +23,42 @@ def page() -> None:
             if submitted and cycle_name:
                 conn = get_connection()
                 try:
+                    # Old sample DB insert
+                    # conn.execute(
+                    #     """
+                    #     INSERT INTO test_cycles (
+                    #         cycle_name, planned_test_cases, executed_test_cases, passed_test_cases,
+                    #         failed_test_cases, blocked_test_cases, deferred_test_cases,
+                    #         scope_executed_pct, scope_pending_pct, active_flag
+                    #     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                    #     """,
+                    #     (cycle_name, planned, executed, passed, failed, blocked, deferred, scope_executed, scope_pending),
+                    # )
                     conn.execute(
                         """
-                        INSERT INTO test_cycles (
-                            cycle_name, planned_test_cases, executed_test_cases, passed_test_cases,
-                            failed_test_cases, blocked_test_cases, deferred_test_cases,
-                            scope_executed_pct, scope_pending_pct, active_flag
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                        INSERT INTO test_execution (
+                            environment, source_filename, planned_test_cases,
+                            total_executed_test_cases, total_not_executed,
+                            total_passed_test_cases, total_failed_test_cases,
+                            blocked_test_cases, deferred_test_cases,
+                            scope_executed_pct, scope_pending_pct,
+                            outof_scope_testcases, active_flag, created_ts
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))
                         """,
-                        (cycle_name, planned, executed, passed, failed, blocked, deferred, scope_executed, scope_pending),
+                        (
+                            cycle_name,
+                            f"{cycle_name}_results.xlsx",
+                            planned,
+                            executed,
+                            planned - executed,
+                            passed,
+                            failed,
+                            blocked,
+                            deferred,
+                            scope_executed,
+                            scope_pending,
+                            0,
+                        ),
                     )
                     conn.commit()
                     st.success("Test cycle added.")
@@ -40,8 +67,10 @@ def page() -> None:
 
     with st.expander("Add defect"):
         with st.form("add_defect_form"):
-            defect_title = st.text_input("Defect title")
-            cycle_name = st.selectbox("Cycle", read_table("test_cycles")["cycle_name"].tolist())
+            defect_id = st.text_input("Defect ID")
+            cycle_name = st.selectbox("Cycle", read_table("test_execution")["environment"].tolist())
+            scenario_id = st.text_input("Scenario ID")
+            testcase_id = st.text_input("Testcase ID")
             severity = st.selectbox("Severity", ["Critical", "High", "Medium", "Low"])
             status = st.selectbox("Status", ["Open", "Fixed, in Retest", "Closed/Deferred"])
             root_cause = st.selectbox(
@@ -50,15 +79,31 @@ def page() -> None:
             )
             week = st.text_input("Discovered week", value="2026-W10")
             submitted = st.form_submit_button("Save defect")
-            if submitted and defect_title:
+            if submitted and defect_id:
                 conn = get_connection()
                 try:
+                    # Old sample DB insert
+                    # conn.execute(
+                    #     """
+                    #     INSERT INTO defects (defect_title, cycle_name, severity, status, root_cause, discovered_week)
+                    #     VALUES (?, ?, ?, ?, ?, ?)
+                    #     """,
+                    #     (defect_title, cycle_name, severity, status, root_cause, week),
+                    # )
                     conn.execute(
                         """
-                        INSERT INTO defects (defect_title, cycle_name, severity, status, root_cause, discovered_week)
-                        VALUES (?, ?, ?, ?, ?, ?)
+                        INSERT INTO defects (
+                            defect_id,
+                            cycle_name,
+                            scenario_id,
+                            testcase_id,
+                            severity,
+                            status,
+                            root_cause,
+                            discovered_week
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         """,
-                        (defect_title, cycle_name, severity, status, root_cause, week),
+                        (defect_id, cycle_name, scenario_id, testcase_id, severity, status, root_cause, week),
                     )
                     conn.commit()
                     st.success("Defect added.")
@@ -66,7 +111,9 @@ def page() -> None:
                     conn.close()
 
     st.markdown("### Current data")
-    st.write("#### Test Cycles")
-    st.dataframe(read_table("test_cycles"), use_container_width=True)
+    st.write("#### Test Execution")
+    # Old sample DB table
+    # st.dataframe(read_table("test_cycles"), use_container_width=True)
+    st.dataframe(read_table("test_execution"), use_container_width=True)
     st.write("#### Defects")
     st.dataframe(read_table("defects"), use_container_width=True)

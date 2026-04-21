@@ -7,6 +7,43 @@ def build_dashboard_dataset(cycles_df: pd.DataFrame, defects_df: pd.DataFrame) -
     cycles = cycles_df.copy()
     defects = defects_df.copy()
 
+    # Support metrics.db column naming
+    if "total_executed_test_cases" in cycles.columns:
+        cycles["executed_test_cases"] = pd.to_numeric(cycles["total_executed_test_cases"], errors="coerce").fillna(0)
+    if "total_passed_test_cases" in cycles.columns:
+        cycles["passed_test_cases"] = pd.to_numeric(cycles["total_passed_test_cases"], errors="coerce").fillna(0)
+    if "total_failed_test_cases" in cycles.columns:
+        cycles["failed_test_cases"] = pd.to_numeric(cycles["total_failed_test_cases"], errors="coerce").fillna(0)
+    if "environment" in cycles.columns and "cycle_name" not in cycles.columns:
+        cycles["cycle_name"] = cycles["environment"]
+
+    numeric_columns = [
+        "planned_test_cases",
+        "executed_test_cases",
+        "passed_test_cases",
+        "failed_test_cases",
+        "blocked_test_cases",
+        "deferred_test_cases",
+        "total_not_executed",
+        "outof_scope_testcases",
+    ]
+    for col in numeric_columns:
+        if col in cycles.columns:
+            cycles[col] = pd.to_numeric(cycles[col], errors="coerce").fillna(0)
+
+    if "scope_executed_pct" in cycles.columns:
+        cycles["scope_executed_pct"] = pd.to_numeric(cycles["scope_executed_pct"].astype(str).str.rstrip("%"), errors="coerce").fillna(0)
+    if "scope_pending_pct" in cycles.columns:
+        cycles["scope_pending_pct"] = pd.to_numeric(cycles["scope_pending_pct"].astype(str).str.rstrip("%"), errors="coerce").fillna(0)
+
+    # Old column naming for sample DB
+    # cycles["pass_rate_pct"] = (
+    #     cycles["passed_test_cases"] / cycles["executed_test_cases"].replace(0, pd.NA)
+    # ) * 100
+    # cycles["execution_pct"] = (
+    #     cycles["executed_test_cases"] / cycles["planned_test_cases"].replace(0, pd.NA)
+    # ) * 100
+
     cycles["pass_rate_pct"] = (
         cycles["passed_test_cases"] / cycles["executed_test_cases"].replace(0, pd.NA)
     ) * 100

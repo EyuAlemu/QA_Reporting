@@ -4,6 +4,7 @@ import importlib.util
 from pathlib import Path
 from typing import Callable
 
+
 import streamlit as st
 
 from config import APP_TITLE
@@ -22,12 +23,15 @@ st.set_page_config(
 
 initialize_database()
 
-BASE_DIR = Path(__file__).resolve().parent
-PAGES_DIR = BASE_DIR / "pages"
+
 
 # ---------------------------------------------------------
 # Landing page logo
 # ---------------------------------------------------------
+
+BASE_DIR = Path(__file__).resolve().parent
+PAGES_DIR = BASE_DIR / "pages"
+
 logo_path = BASE_DIR / "assets" / "AmpcusLogo.png"
 
 if logo_path.exists():
@@ -138,18 +142,17 @@ if send_clicked and user_question:
     try:
         response = ask_openai(user_question)
 
-        st.session_state.sidebar_chat_history.append(
-            {"role": "user", "content": user_question}
-        )
-        st.session_state.sidebar_chat_history.append(
-            {"role": "assistant", "content": response}
-        )
+        # Keep only the latest question and answer in the sidebar
+        st.session_state.sidebar_chat_history = [
+            {"role": "user", "content": user_question},
+            {"role": "assistant", "content": response},
+        ]
 
     except Exception as e:
         st.sidebar.error(f"OpenAI error: {str(e)}")
 
-# Display chat history
-for msg in st.session_state.sidebar_chat_history[-10:]:
+# Display only the most recent sidebar chat exchange
+for msg in st.session_state.sidebar_chat_history:
     if msg["role"] == "user":
         st.sidebar.markdown(f"**You:** {msg['content']}")
     else:

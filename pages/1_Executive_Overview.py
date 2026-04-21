@@ -16,7 +16,9 @@ from config import AS_OF_DATE, PROGRAM_NAME
 
 
 def page() -> None:
-    cycles_df = read_table("test_cycles")
+    # Old table used for sample DB
+    # cycles_df = read_table("test_cycles")
+    cycles_df = read_table("test_execution")
     defects_df = read_table("defects")
     alerts_df = read_table("alerts")
     dataset = build_dashboard_dataset(cycles_df, defects_df)
@@ -41,7 +43,8 @@ def page() -> None:
         st.plotly_chart(root_cause_chart(dataset["root_cause"]), use_container_width=True)
     with row2_col3:
         st.subheader("Alerts")
-        active_alerts = alerts_df[alerts_df["is_active"] == 1]
+        # Metrics DB uses Y/N values for is_active; keep backwards compatibility with 1/0 too
+        active_alerts = alerts_df[alerts_df["is_active"].isin([1, "Y", "y", True])]
         if active_alerts.empty:
             st.success("No active alerts.")
         else:

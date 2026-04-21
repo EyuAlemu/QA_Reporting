@@ -7,8 +7,9 @@ import pandas as pd
 
 from config import OPENAI_API_KEY, OPENAI_MODEL
 
-def ask_openai(question: str) -> str:
+def ask_openai(question: str, api_key: str | None = None) -> str:
     qa_context = build_qa_context()
+    client = _get_client(api_key)
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -39,6 +40,16 @@ def ask_openai(question: str) -> str:
     )
 
     return response.choices[0].message.content or "No response returned."
+
+def build_qa_context() -> str:
+    from database.db import read_table
+    from services.metrics_service import build_dashboard_dataset
+
+    cycles_df = read_table("test_execution")
+    defects_df = read_table("defects")
+    dataset = build_dashboard_dataset(cycles_df, defects_df)
+    return build_ai_context(dataset)
+
 
 def is_openai_configured(api_key: str | None = None) -> bool:
     return bool((api_key or OPENAI_API_KEY).strip())
@@ -82,7 +93,8 @@ def generate_program_analysis(dataset: dict, api_key: str | None = None) -> str:
         "You are a senior QA test director and data analyst. "
         "Analyze QA dashboard data and produce concise executive insights. "
         "Focus on execution, pass rate, defect risk, error discovery trend, coverage, blockers, release readiness, "
-        "and specific recommended actions. Use headings and bullets. Avoid hallucinations. Use only the provided data."
+        "and specific recommended actions. Use headings and bullets. Avoid hallucinations. Use ONLY the provided data. "
+        "Do not invent numbers or assume details not in the data."
     )
     user_prompt = (
         "Analyze this QA reporting dataset. Include: 1) executive summary, 2) key risks, 3) strengths, "
@@ -113,7 +125,9 @@ def ask_dashboard_chat(
             "role": "system",
             "content": (
                 "You are a QA reporting copilot. Answer questions about the dashboard, explain metrics, compare cycles, "
-                "identify risks, and recommend actions based only on the provided data. Be practical and concise."
+                "identify risks, and recommend actions based ONLY on the provided data. Do not make up information, "
+                "invent numbers, or assume details not present in the data. If the information is not available in the "
+                "provided dataset, state that clearly. Be practical and concise."
             ),
         },
         {

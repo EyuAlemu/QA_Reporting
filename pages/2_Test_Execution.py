@@ -8,7 +8,9 @@ from services.metrics_service import build_dashboard_dataset
 
 
 def page() -> None:
-    dataset = build_dashboard_dataset(read_table("test_cycles"), read_table("defects"))
+    # Old table used for sample DB
+    # dataset = build_dashboard_dataset(read_table("test_cycles"), read_table("defects"))
+    dataset = build_dashboard_dataset(read_table("test_execution"), read_table("defects"))
     cycles = dataset["cycles"]
 
     st.markdown("## Test Execution and Pass Rate")
