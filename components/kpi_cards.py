@@ -16,10 +16,10 @@ def render_top_metrics(kpis: dict) -> None:
 
     with col3:
         st.markdown("**Defect Stats**")
-        st.write(f"Critical: {kpis['severity_critical']}")
-        st.write(f"High: {kpis['severity_high']}")
-        st.write(f"Medium: {kpis['severity_medium']}")
-        st.write(f"Low: {kpis['severity_low']}")
+        st.markdown(f"<span style='color:#EC4E4E; font-weight: bold;'>Critical: {kpis['severity_critical']}</span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='color:#F56F6F; font-weight: bold;'>High: {kpis['severity_high']}</span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='color:#F59C6F; font-weight: bold;'>Medium: {kpis['severity_medium']}</span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='color:#E4DB6A; font-weight: bold;'>Low: {kpis['severity_low']}</span>", unsafe_allow_html=True)
 
     with col4:
         st.metric("Closed Defects", kpis["closed_defects"])

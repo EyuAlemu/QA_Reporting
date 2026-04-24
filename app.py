@@ -117,10 +117,17 @@ st.sidebar.caption("© Copyright Ampcus Inc. All Rights Reserved")
 # Sidebar Chatbot
 # ---------------------------------------------------------
 st.sidebar.markdown("---")
+def clear_sidebar_chat() -> None:
+    st.session_state.sidebar_chat_history = []
+    st.session_state.sidebar_chat_input = ""
+
 st.sidebar.markdown("### 🤖 Insight Bot")
 
 if "sidebar_chat_history" not in st.session_state:
     st.session_state.sidebar_chat_history = []
+
+if "sidebar_chat_input" not in st.session_state:
+    st.session_state.sidebar_chat_input = ""
 
 user_question = st.sidebar.text_input(
     "Ask about defects, pass rate, execution, risks...",
@@ -133,10 +140,12 @@ with col_btn1:
     send_clicked = st.button("Send", key="sidebar_send_btn", use_container_width=True)
 
 with col_btn2:
-    clear_clicked = st.button("Clear", key="sidebar_clear_btn", use_container_width=True)
-
-if clear_clicked:
-    st.session_state.sidebar_chat_history = []
+    st.button(
+        "Clear",
+        key="sidebar_clear_btn",
+        use_container_width=True,
+        on_click=clear_sidebar_chat,
+    )
 
 if send_clicked and user_question:
     try:

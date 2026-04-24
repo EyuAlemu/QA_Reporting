@@ -6,10 +6,10 @@ import pandas as pd
 
 SEVERITY_ORDER = ["Critical", "High", "Medium", "Low"]
 SEVERITY_COLOR_MAP = {
-    "Critical": "#ff4d4f",
-    "High": "#fa8c16",
-    "Medium": "#fadb14",
-    "Low": "#73d13d",
+    "Critical": "#EC4E4E",
+    "High": "#F56F6F",
+    "Medium": "#F59C6F",
+    "Low": "#E4DB6A",
     "Critical+High": "#ff7875",
 }
 
