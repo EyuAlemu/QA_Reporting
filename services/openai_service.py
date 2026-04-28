@@ -56,7 +56,16 @@ def is_openai_configured(api_key: str | None = None) -> bool:
 
 
 def _get_client(api_key: str | None = None):
-    from openai import OpenAI
+    try:
+        from openai import OpenAI
+    except ModuleNotFoundError as exc:
+        if exc.name == "jiter":
+            raise ModuleNotFoundError(
+                "The OpenAI package dependency 'jiter' is missing. "
+                "Run `python -m pip install -r requirements.txt` in the same "
+                "environment used to start Streamlit."
+            ) from exc
+        raise
 
     key = (api_key or OPENAI_API_KEY).strip()
     if not key:

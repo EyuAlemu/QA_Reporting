@@ -129,36 +129,41 @@ if "sidebar_chat_history" not in st.session_state:
 if "sidebar_chat_input" not in st.session_state:
     st.session_state.sidebar_chat_input = ""
 
-user_question = st.sidebar.text_input(
-    "Ask about defects, pass rate, execution, risks...",
-    key="sidebar_chat_input",
-)
-
-col_btn1, col_btn2 = st.sidebar.columns([1, 1])
-
-with col_btn1:
-    send_clicked = st.button("Send", key="sidebar_send_btn", use_container_width=True)
-
-with col_btn2:
-    st.button(
-        "Clear",
-        key="sidebar_clear_btn",
+with st.sidebar.form("sidebar_insight_bot_form"):
+    user_question = st.text_input(
+        "Ask about defects, pass rate, execution, risks...",
+        key="sidebar_chat_input",
+    )
+    send_clicked = st.form_submit_button(
+        "Send",
+        type="primary",
         use_container_width=True,
-        on_click=clear_sidebar_chat,
     )
 
-if send_clicked and user_question:
-    try:
-        response = ask_openai(user_question)
+st.sidebar.button(
+    "Clear",
+    key="sidebar_clear_btn",
+    use_container_width=True,
+    on_click=clear_sidebar_chat,
+)
 
-        # Keep only the latest question and answer in the sidebar
-        st.session_state.sidebar_chat_history = [
-            {"role": "user", "content": user_question},
-            {"role": "assistant", "content": response},
-        ]
+if send_clicked:
+    if not user_question.strip():
+        st.sidebar.warning("Enter a question first.")
+    else:
+        question = user_question.strip()
+        try:
+            with st.spinner("Thinking..."):
+                response = ask_openai(question)
 
-    except Exception as e:
-        st.sidebar.error(f"OpenAI error: {str(e)}")
+            # Keep only the latest question and answer in the sidebar
+            st.session_state.sidebar_chat_history = [
+                {"role": "user", "content": question},
+                {"role": "assistant", "content": response},
+            ]
+
+        except Exception as e:
+            st.sidebar.error(f"OpenAI error: {str(e)}")
 
 # Display only the most recent sidebar chat exchange
 for msg in st.session_state.sidebar_chat_history:

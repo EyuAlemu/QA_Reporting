@@ -5,9 +5,9 @@ import streamlit as st
 from components.charts import (
     defects_by_severity_and_cycle,
     defects_by_status,
-    dual_scope_donut,
     gauge_chart,
     root_cause_chart,
+    scope_coverage_donut,
 )
 from components.kpi_cards import render_top_metrics
 from database.db import read_table
@@ -32,11 +32,11 @@ def page() -> None:
     with row1_col1:
         st.plotly_chart(gauge_chart(kpis["error_discovery_rate_pct"], "Error Discovery Rate"), use_container_width=True)
     with row1_col2:
-        st.plotly_chart(dual_scope_donut(dataset["cycles"]), use_container_width=True)
+        st.plotly_chart(scope_coverage_donut(dataset["cycles"]), use_container_width=True)
     with row1_col3:
         st.plotly_chart(defects_by_severity_and_cycle(dataset["defects_per_cycle"]), use_container_width=True)
 
-    row2_col1, row2_col2, row2_col3 = st.columns([1.2, 1.0, 1.0])
+    row2_col1, row2_col2, row2_col3 = st.columns([1.35, 1.0, 1.0])
     with row2_col1:
         st.plotly_chart(defects_by_status(dataset["defect_status"]), use_container_width=True)
     with row2_col2:
