@@ -21,6 +21,42 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+st.markdown(
+    """
+    <style>
+    section[data-testid="stSidebar"] div[data-testid="stFormSubmitButton"] button,
+    section[data-testid="stSidebar"] button[data-testid="stBaseButton-primaryFormSubmit"],
+    section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"],
+    section[data-testid="stSidebar"] button[kind="primaryFormSubmit"],
+    section[data-testid="stSidebar"] button[kind="secondaryFormSubmit"],
+    section[data-testid="stSidebar"] div[data-testid="stForm"] button,
+    button[data-testid="stChatInputSubmitButton"] {
+        background-color: #0B73CE !important;
+        border-color: #0B73CE !important;
+        color: #FFFFFF !important;
+    }
+
+    section[data-testid="stSidebar"] div[data-testid="stFormSubmitButton"] button:hover,
+    section[data-testid="stSidebar"] button[data-testid="stBaseButton-primaryFormSubmit"]:hover,
+    section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover,
+    section[data-testid="stSidebar"] button[kind="primaryFormSubmit"]:hover,
+    section[data-testid="stSidebar"] button[kind="secondaryFormSubmit"]:hover,
+    section[data-testid="stSidebar"] div[data-testid="stForm"] button:hover,
+    button[data-testid="stChatInputSubmitButton"]:hover {
+        background-color: #095EA8 !important;
+        border-color: #095EA8 !important;
+        color: #FFFFFF !important;
+    }
+
+    button[data-testid="stChatInputSubmitButton"] svg {
+        fill: #FFFFFF !important;
+        color: #FFFFFF !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 initialize_database()
 
 

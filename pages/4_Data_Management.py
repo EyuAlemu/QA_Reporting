@@ -75,7 +75,7 @@ def page() -> None:
             status = st.selectbox("Status", ["Open", "Fixed, in Retest", "Closed/Deferred"])
             root_cause = st.selectbox(
                 "Root cause",
-                ["Code defect", "Configuration issue", "Environment issue", "Data issue", "Test script issue", "Business rule gap", "Test data issue"],
+                ["Code", "Stored Proc", "UI", "Environment", "Configuration", "Database"],
             )
             week = st.text_input("Discovered week", value="2026-W10")
             submitted = st.form_submit_button("Save defect")
