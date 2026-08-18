@@ -72,7 +72,7 @@ def page() -> None:
             scenario_id = st.text_input("Scenario ID")
             testcase_id = st.text_input("Testcase ID")
             severity = st.selectbox("Severity", ["Critical", "High", "Medium", "Low"])
-            status = st.selectbox("Status", ["Open", "Fixed, in Retest", "Closed/Deferred"])
+            status = st.selectbox("Status", ["Open", "Fixed", "In Retest", "Closed", "Deferred"])
             root_cause = st.selectbox(
                 "Root cause",
                 ["Code", "Stored Proc", "UI", "Environment", "Configuration", "Database"],

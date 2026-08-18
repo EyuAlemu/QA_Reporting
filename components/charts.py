@@ -139,9 +139,10 @@ def defects_by_severity_and_cycle(defects_per_cycle: pd.DataFrame) -> go.Figure:
 
 def defects_by_status(defect_status: pd.DataFrame) -> go.Figure:
     status_label_map = {
-        "Resolved": "Closed/Deferred",
-        "In Progress": "Fixed, in Retest",
-        "Open": "Open",
+        "Fixed": "Fixed, in Retest",
+        "In Retest": "Fixed, in Retest",
+        "Closed": "Closed/Deferred",
+        "Deferred": "Closed/Deferred",
     }
     status_order = ["Open", "Fixed, in Retest", "Closed/Deferred"]
 
