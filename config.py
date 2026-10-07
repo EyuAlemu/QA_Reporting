@@ -5,6 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent
 # Old sample database path
 # DB_PATH = BASE_DIR / "database" / "qa_reporting.db"
 DB_PATH = BASE_DIR / "database" / "metrics.db"
+#DB_PATH_SAMPLE = BASE_DIR / "database"/"test_report.db"
 APP_TITLE = "QA Functional Testing Dashboard"
 PROGRAM_NAME = "AMPCUS Program"
 AS_OF_DATE = "04/22/2026"
